@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diário de Bordo & Portfólio - Protótipo de Robótica</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter + JetBrains Mono) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        neon: {
+                            blue: '#00f0ff',
+                            cyan: '#0a84ff',
+                            purple: '#7000ff',
+                            green: '#00ff66',
+                            red: '#ff2a6d'
+                        },
+                        dark: {
+                            bg: '#0a0d14',
+                            card: 'rgba(16, 22, 34, 0.75)',
+                            border: 'rgba(0, 240, 255, 0.15)'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Glassmorphism & Neon Glows */
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(56, 189, 248, 0.15);
+        }
+        
+        .glass-panel:hover {
+            border-color: rgba(56, 189, 248, 0.35);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.1);
+        }
+
+        .neon-glow-blue {
+            text-shadow: 0 0 10px rgba(0, 240, 255, 0.5), 0 0 20px rgba(0, 240, 255, 0.2);
+        }
+
+        .neon-border {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0d14;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+
+        /* Reading Progress Bar */
+        #progress-bar {
+            width: 0%;
+            transition: width 0.1s ease-out;
+        }
+
+        /* Code highlight theme */
+        .code-syntax-keyword { color: #ff79c6; }
+        .code-syntax-func { color: #50fa7b; }
+        .code-syntax-string { color: #f1fa8c; }
+        .code-syntax-comment { color: #6272a4; italic: true; }
+        .code-syntax-num { color: #bd93f9; }
+
+        /* Slide / Presentation Mode animations */
+        .slide-active {
+            display: flex !important;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-[#0a0d14] text-slate-200 font-sans antialiased selection:bg-cyan-500 selection:text-black">
+
+    <!-- Reading Progress Bar Sticky -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-slate-900 z-50">
+        <div id="progress-bar" class="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500"></div>
+    </div>
+
+    <!-- Header / Hero Section -->
+    <header class="relative pt-12 pb-16 overflow-hidden border-b border-slate-800/80">
+        <!-- Background Grid Pattern & Glows -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-cyan-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-semibold uppercase tracking-widest mb-4">
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                        Diário de Bordo & Portfólio de Robótica
+                    </div>
+                    <h1 class="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-none mb-4">
+                        Projeto <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 neon-glow-blue">AUTODOOR-X</span>
+                    </h1>
+                    <p class="text-lg text-slate-400 max-w-2xl">
+                        Documentação técnica e registros do desenvolvimento da Porta Automática Inteligente com Sensores Ultrassônicos e Controle por Servomotor.
+                    </p>
+                </div>
+
+                <!-- Quick Action Controls -->
+                <div class="flex flex-wrap items-center gap-3 glass-panel p-4 rounded-2xl border border-slate-800">
+                    <button onclick="togglePresentationMode()" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-sm shadow-lg shadow-cyan-500/20 transition-all hover:scale-105">
+                        <i class="fa-solid fa-desktop"></i>
+                        <span>Modo Apresentação</span>
+                    </button>
+                    
+                    <button onclick="scrollToSection('prototipo')" class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium text-sm transition-all border border-slate-700">
+                        <i class="fa-solid fa-play text-cyan-400"></i>
+                        <span>Ver Protótipo</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Global Search & Quick Filter -->
+            <div class="mt-8 pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="relative w-full sm:w-96">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="searchInput" onkeyup="filterSections()" placeholder="Buscar nas seções (ex: código, Arduino, falha)..." 
+                           class="w-full pl-10 pr-4 py-2 bg-slate-900/90 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors">
+                </div>
+                <div class="flex items-center gap-2 text-xs text-slate-400 w-full sm:w-auto justify-end">
+                    <i class="fa-solid fa-circle-info text-cyan-400"></i>
+                    <span>Pressione <kbd class="px-1.5 py-0.5 bg-slate-800 rounded border border-slate-700 text-slate-300">ESC</kbd> para sair do modo apresentação</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky top-0 z-40 bg-[#0a0d14]/90 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 overflow-x-auto no-scrollbar py-2">
+                <div class="flex space-x-1 sm:space-x-2 min-w-max">
+                    <a href="#grupo" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-users"></i> <span>1. Grupo</span>
+                    </a>
+                    <a href="#ideia" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-lightbulb"></i> <span>2. Ideia</span>
+                    </a>
+                    <a href="#planejamento" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-pen-ruler"></i> <span>3. Planejamento</span>
+                    </a>
+                    <a href="#montagem" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-screwdriver-wrench"></i> <span>4. Montagem</span>
+                    </a>
+                    <a href="#testes" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-vial"></i> <span>5. Testes</span>
+                    </a>
+                    <a href="#problemas" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation"></i> <span>6. Problemas</span>
+                    </a>
+                    <a href="#alteracoes" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-rotate"></i> <span>7. Alterações</span>
+                    </a>
+                    <a href="#ia" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-robot"></i> <span>8. Uso da IA</span>
+                    </a>
+                    <a href="#aprendizagens" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-brain"></i> <span>9. Aprendizagens</span>
+                    </a>
+                    <a href="#prototipo" class="nav-link px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-cyan-400 hover:bg-slate-800/50 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-cubes"></i> <span>10. Protótipo Final</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+
+        <!-- 1. GRUPO -->
+        <section id="grupo" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">1. Integrantes do Grupo</h2>
+                    <p class="text-xs text-slate-400">Papéis, responsabilidades e contribuições de cada membro no projeto</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Ana Luiza -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden group hover:border-cyan-500/40 transition-all">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white">Ana Luiza</h3>
+                    <p class="text-xs text-cyan-400 font-semibold mb-3">Líder & Programação</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Liderança do grupo, desenvolvimento da lógica em C++/Arduino e implementação dos filtros de leitura do sensor.
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap justify-center gap-1.5 text-[10px] text-slate-300">
+                        <span class="bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">C++ / Arduino</span>
+                        <span class="bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">Gestão</span>
+                    </div>
+                </div>
+
+                <!-- Carlos -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden group hover:border-cyan-500/40 transition-all">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-bolt"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white">Carlos</h3>
+                    <p class="text-xs text-cyan-400 font-semibold mb-3">Hardware & Eletrônica</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Dimensionamento elétrico, montagem da protoboard, soldagem de componentes e sistema de alimentação externa.
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap justify-center gap-1.5 text-[10px] text-slate-300">
+                        <span class="bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">Circuitos</span>
+                        <span class="bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">Soldagem</span>
+                    </div>
+                </div>
+
+                <!-- Fernando -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden group hover:border-cyan-500/40 transition-all">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white">Fernando</h3>
+                    <p class="text-xs text-cyan-400 font-semibold mb-3">Modelagem & Mecânica</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Design e corte da estrutura em MDF, alinhamento mecânico do servomotor e acoplamento da porta de correr.
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap justify-center gap-1.5 text-[10px] text-slate-300">
+                        <span class="bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">MDF / CAD</span>
+                        <span class="bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">Mecânica</span>
+                    </div>
+                </div>
+
+                <!-- Izabelle -->
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 text-center relative overflow-hidden group hover:border-cyan-500/40 transition-all">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-white">Izabelle</h3>
+                    <p class="text-xs text-cyan-400 font-semibold mb-3">Testes & Documentação</p>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Validação prática de proximidade, registro do Diário de Bordo, relatórios de testes e elaboração das apresentações.
+                    </p>
+                    <div class="mt-4 pt-4 border-t border-slate-800/80 flex flex-wrap justify-center gap-1.5 text-[10px] text-slate-300">
+                        <span class="bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">Testes</span>
+                        <span class="bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">Documentação</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. IDEIA -->
+        <section id="ideia" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-lightbulb"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">2. A Ideia do Projeto</h2>
+                    <p class="text-xs text-slate-400">O desafio, inspiração e o problema a ser resolvido</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div class="space-y-4">
+                    <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                        <h3 class="text-sm font-semibold text-cyan-400 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye"></i> O Problema
+                        </h3>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            Contaminação por contato físico em maçanetas de portas em ambientes hospitalares e salas limpas, além da falta de acessibilidade para pessoas com mobilidade reduzida.
+                        </p>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                        <h3 class="text-sm font-semibold text-cyan-400 mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-compass"></i> A Solução Proposta
+                        </h3>
+                        <p class="text-sm text-slate-300 leading-relaxed">
+                            Uma porta de correr automatizada acionada por sensor ultrassônico que detecta a aproximação em um raio ajustável de 15cm a 50cm, acionando um servo motor suavemente e sinalizando com LEDs RGB o status de acesso.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 to-slate-950">
+                    <h3 class="text-base font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-cyan-400"></i> Objetivos Principais
+                    </h3>
+                    <ul class="space-y-3 text-sm text-slate-300">
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-check-circle text-cyan-400 mt-1"></i>
+                            <span>Automatizar abertura/fechamento sem necessidade de toque manual.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-check-circle text-cyan-400 mt-1"></i>
+                            <span>Garantir resposta rápida (tempo de reação &lt; 0.5s).</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-check-circle text-cyan-400 mt-1"></i>
+                            <span>Implementar travamento temporizado de segurança para evitar acidentes.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <i class="fa-solid fa-check-circle text-cyan-400 mt-1"></i>
+                            <span>Manter baixo custo de montagem (&lt; R$ 150,00 total).</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. PLANEJAMENTO -->
+        <section id="planejamento" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-pen-ruler"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">3. Planejamento & Materiais</h2>
+                    <p class="text-xs text-slate-400">Cronograma do projeto e componentes selecionados</p>
+                </div>
+            </div>
+
+            <!-- Cronograma Gantt Simplificado -->
+            <div class="glass-panel p-6 rounded-2xl border border-slate-800 mb-8">
+                <h3 class="text-sm font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-days text-cyan-400"></i> Linha do Tempo do Desenvolvimento
+                </h3>
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <div class="flex justify-between text-slate-400 mb-1">
+                            <span>Semana 1: Pesquisa de Componentes & Alinhamento</span>
+                            <span class="text-cyan-400 font-mono">100% Concluído</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="bg-cyan-400 h-2 rounded-full w-full"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-slate-400 mb-1">
+                            <span>Semana 2: Desenho do Circuito no Tinkercad & Algoritmo Base</span>
+                            <span class="text-cyan-400 font-mono">100% Concluído</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="bg-cyan-400 h-2 rounded-full w-full"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-slate-400 mb-1">
+                            <span>Semana 3: Montagem Física, Corte Estrutural e Testes de Código</span>
+                            <span class="text-cyan-400 font-mono">100% Concluído</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="bg-cyan-400 h-2 rounded-full w-full"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between text-slate-400 mb-1">
+                            <span>Semana 4: Correção de Bugs, Calibração do Servo e Apresentação</span>
+                            <span class="text-cyan-400 font-mono">100% Concluído</span>
+                        </div>
+                        <div class="w-full bg-slate-800 rounded-full h-2">
+                            <div class="bg-cyan-400 h-2 rounded-full w-full"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela / Lista de Componentes -->
+            <h3 class="text-sm font-bold text-white mb-4">Lista de Componentes Utilizados</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center">
+                    <i class="fa-solid fa-microchip text-2xl text-cyan-400 mb-2"></i>
+                    <h4 class="text-xs font-bold text-white">Arduino Uno R3</h4>
+                    <p class="text-[11px] text-slate-400">Microcontrolador principal</p>
+                </div>
+                <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center">
+                    <i class="fa-solid fa-wifi text-2xl text-cyan-400 mb-2"></i>
+                    <h4 class="text-xs font-bold text-white">Sensor HC-SR04</h4>
+                    <p class="text-[11px] text-slate-400">Sensor ultrassônico de distância</p>
+                </div>
+                <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center">
+                    <i class="fa-solid fa-gear text-2xl text-cyan-400 mb-2"></i>
+                    <h4 class="text-xs font-bold text-white">Servomotor SG90</h4>
+                    <p class="text-[11px] text-slate-400">Atuador da porta (180°)</p>
+                </div>
+                <div class="glass-panel p-4 rounded-xl border border-slate-800 text-center">
+                    <i class="fa-solid fa-lightbulb text-2xl text-cyan-400 mb-2"></i>
+                    <h4 class="text-xs font-bold text-white">LEDs & Buzzer</h4>
+                    <p class="text-[11px] text-slate-400">Sinalização sonora e visual</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. MONTAGEM -->
+        <section id="montagem" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-screwdriver-wrench"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">4. Processo de Montagem</h2>
+                    <p class="text-xs text-slate-400">Passo a passo da construção física e esquemas elétricos</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-diagram-project text-cyan-400"></i> Diagrama do Circuito
+                    </h3>
+                    <div class="bg-slate-900 rounded-xl p-4 border border-slate-800 text-xs font-mono text-cyan-300">
+                        <p>Arduino Pin 9  ---> Servo Motor SG90 (Sinal)</p>
+                        <p>Arduino Pin 11 ---> Sensor Ultrassônico (Trig)</p>
+                        <p>Arduino Pin 12 ---> Sensor Ultrassônico (Echo)</p>
+                        <p>Arduino Pin 6  ---> LED Verde (Sucesso)</p>
+                        <p>Arduino Pin 5  ---> LED Vermelho (Standby)</p>
+                        <p>Arduino Pin 3  ---> Buzzer Sonoro</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 space-y-4">
+                    <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-cube text-cyan-400"></i> Montagem da Estrutura
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        A estrutura externa foi cortada em placas de MDF de 3mm com encaixes projetados no CAD. O servo motor foi fixado na parte superior com uma engrenagem conectada à guia da porta de correr.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. TESTES -->
+        <section id="testes" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-vial"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">5. Bateria de Testes</h2>
+                    <p class="text-xs text-slate-400">Protocolos de validação e métricas obtidas</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                    <div class="text-cyan-400 text-2xl font-bold font-mono mb-1">0.3s</div>
+                    <div class="text-xs font-bold text-white mb-1">Tempo de Resposta</div>
+                    <p class="text-[11px] text-slate-400">Média entre a detecção do sensor e o início do movimento da porta.</p>
+                </div>
+                <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                    <div class="text-cyan-400 text-2xl font-bold font-mono mb-1">98%</div>
+                    <div class="text-xs font-bold text-white mb-1">Precisão de Detecção</div>
+                    <p class="text-[11px] text-slate-400">Taxa de sucesso na identificação de pessoas em movimento frontal.</p>
+                </div>
+                <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                    <div class="text-cyan-400 text-2xl font-bold font-mono mb-1">5.0s</div>
+                    <div class="text-xs font-bold text-white mb-1">Tempo de Permanência</div>
+                    <p class="text-[11px] text-slate-400">Tempo ajustado até o fechamento automático após a passagem.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. PROBLEMAS -->
+        <section id="problemas" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-400 text-lg">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">6. Problemas e Desafios</h2>
+                    <p class="text-xs text-slate-400">Dificuldades mecânicas, elétricas e de software encontradas</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="glass-panel p-5 rounded-xl border border-red-500/20 bg-red-500/5">
+                    <h3 class="text-sm font-bold text-red-400 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-bug"></i> Vibração Severa no Servomotor (Jittering)
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        O servo motor tremia e aquecia excessivamente quando a porta ficava estática. Descobrimos que o sinal de ruído do sensor provocava micro-ajustes constantes no motor.
+                    </p>
+                </div>
+                <div class="glass-panel p-5 rounded-xl border border-red-500/20 bg-red-500/5">
+                    <h3 class="text-sm font-bold text-red-400 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Queda de Tensão no Arduino
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Ao acionar o motor sob carga mecânica, o Arduino reiniciava devido ao consumo de corrente de pico, desativando a placa.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 7. ALTERAÇÕES -->
+        <section id="alteracoes" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">7. Alterações & Soluções</h2>
+                    <p class="text-xs text-slate-400">Modificações aplicadas para resolver as falhas registradas</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="glass-panel p-5 rounded-xl border border-green-500/20 bg-green-500/5">
+                    <h3 class="text-sm font-bold text-green-400 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-wrench"></i> Filtro de Média Móvel no Código
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Implementamos uma média móvel de 5 leituras consecutivas do sensor ultrassônico antes de acionar a porta, eliminando ruídos e falsos disparos.
+                    </p>
+                </div>
+                <div class="glass-panel p-5 rounded-xl border border-green-500/20 bg-green-500/5">
+                    <h3 class="text-sm font-bold text-green-400 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-car-battery"></i> Alimentação Externa Dedicada
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Separamos a alimentação do servo motor com uma fonte externa de 5V 2A, compartilhando apenas o GND com o Arduino R3.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. USO DA IA -->
+        <section id="ia" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">8. Uso da Inteligência Artificial</h2>
+                    <p class="text-xs text-slate-400">Como ferramentas de IA apoiaram no desenvolvimento</p>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                    <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+                        <h3 class="font-bold text-cyan-400 mb-2"><i class="fa-solid fa-code"></i> Depuração de Código</h3>
+                        <p class="text-slate-300">Uso da IA para identificar inconsistências no cálculo de tempo do ultrassom e otimização das funções sem bloqueio por `delay()`.</p>
+                    </div>
+                    <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
+                        <h3 class="font-bold text-cyan-400 mb-2"><i class="fa-solid fa-file-lines"></i> Estruturação do Portfólio</h3>
+                        <p class="text-slate-300">Geração da estrutura inicial do Diário de Bordo, garantindo uma apresentação coerente e organizada dos dados.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 9. APRENDIZAGENS -->
+        <section id="aprendizagens" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">9. Aprendizagens do Grupo</h2>
+                    <p class="text-xs text-slate-400">Conhecimentos adquiridos ao longo da jornada</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                    <i class="fa-solid fa-gears text-cyan-400 text-xl mb-2"></i>
+                    <h3 class="text-xs font-bold text-white mb-1">Mecânica & Ajustes</h3>
+                    <p class="text-[11px] text-slate-400">Compreensão prática sobre torque, folga mecânica e a importância do alinhamento físico em robótica.</p>
+                </div>
+                <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                    <i class="fa-solid fa-microchip text-cyan-400 text-xl mb-2"></i>
+                    <h3 class="text-xs font-bold text-white mb-1">Gestão de Corrente</h3>
+                    <p class="text-[11px] text-slate-400">Importância de isolar fontes de alimentação de motores e lógica de processamento.</p>
+                </div>
+                <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                    <i class="fa-solid fa-people-group text-cyan-400 text-xl mb-2"></i>
+                    <h3 class="text-xs font-bold text-white mb-1">Trabalho em Equipe</h3>
+                    <p class="text-[11px] text-slate-400">Sincronização entre montagem de hardware, escrita de firmware e documentação contínua.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. PROTÓTIPO FINAL -->
+        <section id="prototipo" class="section-card scroll-mt-24">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-lg">
+                    <i class="fa-solid fa-cubes"></i>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-white">10. Protótipo Final Funcional</h2>
+                    <p class="text-xs text-slate-400">Resultado do projeto AUTODOOR-X em operação</p>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <div>
+                        <span class="inline-block px-2.5 py-1 rounded-md bg-green-500/20 text-green-400 font-mono text-xs mb-3 border border-green-500/30">
+                            ✓ Status: Aprovado nos Testes
+                        </span>
+                        <h3 class="text-xl font-bold text-white mb-3">AUTODOOR-X Versão 1.0</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            O protótipo atendeu a todos os requisitos de acionamento sem contato, resposta ágil e sinalização clara de estado. O sistema opera de forma autônoma e segura.
+                        </p>
+                        <div class="flex gap-2">
+                            <button onclick="scrollToSection('grupo')" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition-colors">
+                                Voltar ao Início
+                            </button>
+                        </div>
+                    </div>
+                    <div class="relative rounded-xl overflow-hidden border border-slate-800">
+                        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=600&auto=format&fit=crop&q=80" alt="Protótipo Final" class="w-full h-48 object-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="border-t border-slate-800 py-8 mt-16 text-center text-xs text-slate-500">
+        <p>Diário de Bordo & Portfólio de Robótica - Projeto AUTODOOR-X</p>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        // Smooth Scrolling Function
+        function scrollToSection(id) {
+            const section = document.getElementById(id);
+            if (section) {
+                section.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Reading Progress Bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            const progressBar = document.getElementById('progress-bar');
+            if (progressBar) {
+                progressBar.style.width = scrolled + '%';
+            }
+        });
+
+        // Presentation Mode Toggle
+        let isPresentation = false;
+        function togglePresentationMode() {
+            isPresentation = !isPresentation;
+            const sections = document.querySelectorAll('.section-card');
+            
+            if (isPresentation) {
+                document.body.classList.add('presentation-mode');
+                sections.forEach((sec, idx) => {
+                    if (idx !== 0) sec.style.display = 'none';
+                });
+                alert("Modo Apresentação Ativado! Pressione ESC para sair.");
+            } else {
+                document.body.classList.remove('presentation-mode');
+                sections.forEach((sec) => sec.style.display = 'block');
+            }
+        }
+
+        // Exit presentation mode on ESC key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isPresentation) {
+                togglePresentationMode();
+            }
+        });
+
+        // Filter/Search Sections Function
+        function filterSections() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toLowerCase();
+            const sections = document.querySelectorAll('.section-card');
+
+            sections.forEach(section => {
+                const text = section.innerText.toLowerCase();
+                if (text.includes(filter)) {
+                    section.style.display = 'block';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
